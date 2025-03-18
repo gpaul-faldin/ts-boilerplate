@@ -1,6 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 const fs = require('fs');
 const path = require('path');
 
@@ -16,7 +13,11 @@ if (!fs.existsSync(huskyDir)) {
 const preCommitContent = `#!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Run lint-staged for code quality checks
 npx lint-staged
+
+# Run tests only for affected files
+npx ts-node scripts/run-relevant-tests.ts
 `;
 
 // Write the file with platform-specific line endings
@@ -26,3 +27,5 @@ fs.writeFileSync(preCommitFile, preCommitContent.replace(/\n/g, require('os').EO
 if (process.platform !== 'win32') {
   fs.chmodSync(preCommitFile, '755');
 }
+
+console.log('✅ Husky pre-commit hook has been configured successfully');
